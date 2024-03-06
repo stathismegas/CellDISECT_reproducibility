@@ -13,5 +13,5 @@ pip install -r requirements.txt
 ```
 Install dis2p 
 ```
-pip install git+https://github.com/M0hammadL/scfair.git
+pip install git+https://github.com/Lotfollahi-lab/dis2p.git
 ```
