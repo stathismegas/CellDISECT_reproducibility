@@ -22,4 +22,7 @@ For Integration benchmarking (scIB) of dis2p and dis2p_cE against scVI, biolord 
 
 For Disentanglement and Fairness Benchmarking see Oct13_mini_tutorial_dis2p.ipynb.
 
+For dis2pmPoisson application on Neurips2021 dataset see Feb9_neurips_debug_dis2pmPoisson2.ipynb.
+
 For counterfactual performance prediction see notebooks 
+
