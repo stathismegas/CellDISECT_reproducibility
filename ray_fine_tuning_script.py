@@ -27,11 +27,12 @@ DATA_NAME = 'Eraslan'
 # Please update the code if you see any mistakes or if you have any suggestions
 ############################################################################################################
 
-def train_fn(config, plan_keys=None, training_keys=None):
+def train_fn(config, plan_keys=None, training_keys=None, arch_keys=None):
 
     # CHANGE PATH TO YOUR DATA
     # USE ABSOLUTE PATH (STARTING FROM ROOT --> /)
-    adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/eraslan_preprocessed1200.h5ad')
+    adata = sc.read_h5ad(
+        '/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/eraslan_preprocessed1200.h5ad')
     adata = adata[adata.X.sum(1) != 0].copy()
     sc.pp.subsample(adata, fraction=0.1)
 
@@ -44,8 +45,10 @@ def train_fn(config, plan_keys=None, training_keys=None):
         categorical_covariate_keys=cats,
         continuous_covariate_keys=[]
     )
+    arch_dict = {key: config[key] for key in arch_keys}
+    print(arch_dict)
     model = dvi.Dis2pVI_cE(adata,
-                           n_layers=config['n_layers']
+                           **arch_dict,
                            )
 
     x_loss = {f'x_{i}_validation': 0 for i in range(len(cats)+1)}
@@ -92,9 +95,11 @@ plan_kwargs = {
 config = {'n_layers': tune.choice([1, 2, 3]),
           'n_hidden': tune.choice([128, 256, 512, 1024]),
           'n_latent_shared': tune.choice([10, 20, 30, 40, 50]),
-          'n_latent_attribute': tune.choice([10, 20, 30, 40, 50]),
+          'n_latent_attribute': tune.sample_from(
+              lambda spec: spec.config.n_latent_shared),
           'dropout_rate': tune.choice([0.1, 0.2, 0.3, 0.4, 0.5]),
           }
+arch_keys = list(config.keys())
 config.update(training_params)
 config.update(plan_kwargs)
 
@@ -124,10 +129,11 @@ tuner = tune.Tuner(
         tune.with_parameters(
             train_fn,
             plan_keys=plan_keys,
-            training_keys=training_keys,),
+            training_keys=training_keys,
+            arch_keys=arch_keys,),
         resources={
-            "cpu": 4,
-            "gpu": 0.2
+            "cpu": 50,
+            "gpu": 0.4
         }
     ),
     tune_config=tune.TuneConfig(
@@ -139,7 +145,8 @@ tuner = tune.Tuner(
     run_config=air.RunConfig(
         name=f"tune_dis2p_{DATA_NAME}",
         progress_reporter=reporter,
-        storage_path='/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2p/', # CHANGE TO YOUR PATH
+        # CHANGE TO YOUR PATH
+        storage_path='/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2p/',
         log_to_file=True,
     ),
     param_space=config,
