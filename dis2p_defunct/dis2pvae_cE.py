@@ -486,11 +486,11 @@ class Dis2pVAE_cE(BaseModuleClass):
             F1 = F1Score(**kwargs).to(device)
             f1_scores.append(F1(predicted_labels, cats[i]).to(device))
 
-        ce_loss_sum = sum(torch.mean(ce) for ce in ce_losses)
+        ce_loss_mean = sum(ce_losses) / len(ce_losses)
         accuracy = sum(accuracy_scores) / len(accuracy_scores)
         f1 = sum(f1_scores) / len(f1_scores)
 
-        return ce_loss_sum, accuracy, f1
+        return ce_loss_mean, accuracy, f1
 
     def loss(
             self,
@@ -509,7 +509,7 @@ class Dis2pVAE_cE(BaseModuleClass):
 
         reconst_loss_x_list = [-torch.mean(px.log_prob(x).sum(-1)) for px in generative_outputs["px"]]
         reconst_loss_x_dict = {'x_' + str(i): reconst_loss_x_list[i] for i in range(len(reconst_loss_x_list))}
-        reconst_loss_x = sum(reconst_loss_x_list)
+        reconst_loss_x = sum(reconst_loss_x_list) / len(reconst_loss_x_list)
 
         # reconstruction loss X'
 
@@ -557,18 +557,18 @@ class Dis2pVAE_cE(BaseModuleClass):
                      zip(inference_outputs["qzs"], inference_outputs["qzs_prior"])]
 
         kl_z_dict = {'z_' + str(i+1): kl_z_list[i] for i in range(len(kl_z_list))}
+        kl_loss = sum(kl_z_list) / len(kl_z_list)
 
         # classification metrics: CE, ACC, F1
 
         logits = self.classification_logits(inference_outputs)
-        ce_loss_sum, accuracy, f1 = self.compute_clf_metrics(logits, cat_covs)
-        ce_loss_mean = ce_loss_sum / len(range(self.zs_num))
+        ce_loss_mean, accuracy, f1 = self.compute_clf_metrics(logits, cat_covs)
 
         # total loss
         loss = reconst_loss_x + \
                reconst_loss_x_cf * cf_weight + \
-               sum(kl_z_list) * kl_weight * beta + \
-               ce_loss_sum * clf_weight
+               kl_loss * kl_weight * beta + \
+               ce_loss_mean * clf_weight
 
         loss_dict = {
             LOSS_KEYS.LOSS: loss,

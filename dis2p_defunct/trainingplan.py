@@ -247,8 +247,8 @@ class Dis2pTrainingPlan(TrainingPlan):
 
             # fool classifier if doing adversarial training
             if kappa > 0:
-                ce_loss_sum, accuracy, f1 = self.adv_classifier_metrics(inference_outputs, False)
-                loss -= ce_loss_sum * kappa * self.adv_clf_weight
+                ce_loss_mean, accuracy, f1 = self.adv_classifier_metrics(inference_outputs, False)
+                loss -= ce_loss_mean * kappa * self.adv_clf_weight
 
             opt1.zero_grad()
             self.manual_backward(loss)
@@ -257,13 +257,12 @@ class Dis2pTrainingPlan(TrainingPlan):
         # train adversarial classifier
         if opt2 is not None:
 
-            ce_loss_sum, accuracy, f1 = self.adv_classifier_metrics(inference_outputs, True)
-            ce_loss_sum *= kappa
+            ce_loss_mean, accuracy, f1 = self.adv_classifier_metrics(inference_outputs, True)
+            ce_loss_mean *= kappa
             opt2.zero_grad()
-            self.manual_backward(ce_loss_sum)
+            self.manual_backward(ce_loss_mean)
             opt2.step()
 
-        ce_loss_mean = ce_loss_sum / len(range(self.zs_num))
         losses.update({'adv_ce': ce_loss_mean, 'adv_acc': accuracy, 'adv_f1': f1})
 
         self.compute_and_log_metrics(losses, self.train_metrics, "train")
@@ -280,9 +279,8 @@ class Dis2pTrainingPlan(TrainingPlan):
             batch, loss_kwargs=input_kwargs
         )
 
-        ce_loss_sum, accuracy, f1 = self.adv_classifier_metrics(inference_outputs, True)
+        ce_loss_mean, accuracy, f1 = self.adv_classifier_metrics(inference_outputs, True)
 
-        ce_loss_mean = ce_loss_sum / len(range(self.zs_num))
         losses.update({'adv_ce': ce_loss_mean, 'adv_acc': accuracy, 'adv_f1': f1})
 
         self.compute_and_log_metrics(losses, self.val_metrics, "validation")
