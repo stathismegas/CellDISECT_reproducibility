@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from os.path import join
+import re
 from typing import Any, Literal
 
 from anndata import AnnData
@@ -11,8 +12,10 @@ from mudata import MuData
 from ray.tune import ResultGrid, Tuner
 from ray.tune.schedulers import TrialScheduler
 from ray.tune.search import SearchAlgorithm
+from ray import train
 
 from ray.air.integrations.wandb import WandbLoggerCallback
+
 
 from scvi._types import AnnOrMuData
 from scvi.model.base import BaseModelClass
@@ -26,6 +29,8 @@ from lightning.pytorch import LightningDataModule
 from scvi._types import AnnOrMuData
 from scvi.model.base import BaseModelClass
 import scanpy as sc
+
+from metrics.evaluate import ood_r2_eval, ood_evaluate_emd, asw_per_covariate
 
 logger = logging.getLogger(__name__)
 
@@ -535,6 +540,10 @@ def _trainable(
     sub_sample: float | None = None,
     setup_anndata_kwargs: dict[str, Any] = {},
     plan_kwargs_keys: list[str] = [],
+    log_extra: bool = True,
+    cov_name: str = 'sex',
+    cov_values: str = 'female',
+    cov_value_cf: str = 'male',
 ) -> None:
     """Implements a Ray Tune trainable function for an :class:`~scvi.autotune.AutotuneExperiment`.
 
@@ -577,11 +586,13 @@ def _trainable(
         "callbacks": [experiment.metrics_callback],
         **actual_train_args,
     }
+    print(f"Training with train_args: {train_args}")
 
     settings.seed = experiment.seed
     if adata_path is not None:
         adata = sc.read_h5ad(adata_path)
         adata.X = adata.layers['counts'].copy()
+        adata_ = adata.copy()
         if sub_sample is not None:
             sc.pp.subsample(adata, fraction=sub_sample)
         experiment.model_cls.setup_anndata(adata, **setup_anndata_kwargs)
@@ -589,6 +600,44 @@ def _trainable(
         model = experiment.model_cls(adata, **model_args)
         model.train(plan_kwargs=plan_kwargs,
                     **train_args)
+        cats = setup_anndata_kwargs['categorical_covariate_keys']
+        if log_extra:
+            r2_results = ood_r2_eval(model,
+                                    adata_[(adata_.obs['split'] == 'test') & (adata_.obs['tissue'] == 'lingula of left lung')],
+                                    cov_name=cov_name,
+                                    cov_values=cov_values,
+                                    cov_value_cf=cov_value_cf,
+                                    cats=cats,
+                                    n_samples=1000,)
+            emd_results = ood_evaluate_emd(model,
+                                    adata_[(adata_.obs['split'] == 'test') & (adata_.obs['tissue'] == 'lingula of left lung')],
+                                    cov_name=cov_name,
+                                    cov_values=cov_values,
+                                    cov_value_cf=cov_value_cf,
+                                    cats=cats,
+                                    n_samples=1000,)
+            scib_resutls = asw_per_covariate(model,
+                                             adata,
+                                             cats,)
+            report_dict = {
+                "mean_ood_r2_20DEG": r2_results.iloc[0]['Mean'],
+                "mean_ood_r2_50DEG": r2_results.iloc[1]['Mean'],
+                "mean_ood_r2_AllGenes": r2_results.iloc[2]['Mean'],
+                "var_ood_r2_20DEG": r2_results.iloc[0]['Variance'],
+                "var_ood_r2_50DEG": r2_results.iloc[1]['Variance'],
+                "var_ood_r2_AllGenes": r2_results.iloc[2]['Variance'],
+                "ood_emd_20DEG": emd_results.iloc[0]['EMD'],
+                "ood_emd_50DEG": emd_results.iloc[1]['EMD'],
+                "ood_emd_AllGenes": emd_results.iloc[2]['EMD'],
+            }
+            scib_dict = {}
+            for cat in cats:
+                scib_dict.update({f"asw_conservation_{cat}": scib_resutls[cat]["conservation"]})
+                scib_dict.update({f"asw_batch_removal_{cat}": scib_resutls[cat]["batch"]})
+
+            report_dict.update(scib_dict)
+            report_dict.update({"loss_validation": -1,})
+            train.report(report_dict)
         del adata
         import gc
         gc.collect()
@@ -600,8 +649,7 @@ def _trainable(
         experiment.model_cls.setup_anndata(adata, **setup_anndata_kwargs)
 
         model = experiment.model_cls(adata, **model_args)
-        model.train(max_epochs=2000,
-                    use_gpu=True,
+        model.train(use_gpu=True,
                     early_stopping_patience=10,
                     check_val_every_n_epoch=5,
                     plan_kwargs=plan_kwargs,
