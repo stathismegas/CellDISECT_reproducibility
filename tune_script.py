@@ -1,18 +1,20 @@
-from tuner_base import run_autotune
-from dis2p_defunct import dis2pvi_cE as dvi
+from dis2p.tuner_base import run_autotune
+from dis2p import dis2pvi_cE as dvi
 
 import scanpy as sc
 from ray import tune
-import numpy as np
 
 import pickle
 
 
-DATA_PATH = '/nfs/team205/sm58/packages/dis2p_trials/dis2p_reproduciblity/data/eraslan_preprocessed1200_split.h5ad'  # Change this to your desired path
+# DATA_PATH = '/nfs/team205/sm58/packages/dis2p_trials/dis2p_reproduciblity/data/eraslan_preprocessed1200_split.h5ad'  # Change this to your desired path
+DATA_PATH = '/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/eraslan_preprocessed1200_split_deg.h5ad'  # Change this to your desired path
 adata = sc.read_h5ad(DATA_PATH)
 # Counts should be available in the 'counts' layer
 adata.X = adata.layers['counts'].copy()
 sc.pp.subsample(adata, fraction=0.1)
+
+split_key = 'split_Epithelial_luminal'
 
 model_args = {'n_layers': tune.choice([2, 3]),
               'n_hidden': tune.choice([128]),
@@ -20,10 +22,10 @@ model_args = {'n_layers': tune.choice([2, 3]),
               'n_latent_attribute': tune.sample_from(
               lambda spec: spec.config.model_args.n_latent_shared),
               'dropout_rate': tune.choice([0.2]),
-               'split_key': 'split',
-               'train_split': ['train'],
-               'valid_split': ['val'],
-               'test_split': ['test'],
+              'split_key': split_key,
+              'train_split': ['train'],
+              'valid_split': ['val'],
+              'test_split': ['test'],
               }
 
 train_args = {
@@ -31,6 +33,10 @@ train_args = {
     'lr': tune.uniform(1e-5, 1e-2),
     'weight_decay': 3e-6,
     'new_cf_method': True,
+    'lr_patience': 3,
+    'lr_factor': 0.5,
+    'lr_scheduler_metric': 'loss_validation',
+
     # 'weight_decay': tune.loguniform(1e-6, 1e-3),
     # 'n_epochs_kl_warmup': 40,
 }
@@ -42,13 +48,13 @@ trainer_actual_args = {
     # 'max_epochs': tune.choice([2]),
     'batch_size': tune.choice([512]),
     # 'cf_weight': tune.uniform(1e-4, 1e0),
-    'cf_weight': 0,
-    'beta': tune.uniform(1e-2, 1e1),
-    'clf_weight': tune.uniform(1e-2, 1e1),
-    'adv_clf_weight': tune.uniform(1e-2, 1e1),
-    'adv_period': tune.choice([1, 2, 3]),
-    'n_cf': 1,
-    # 'n_cf': tune.choice([1, 3]),
+    'cf_weight': tune.uniform(1e-2, 1e1),
+    'beta': tune.uniform(1e-3, 1e0),
+    'clf_weight': tune.uniform(1e-3, 1e0),
+    'adv_clf_weight': tune.uniform(1e-3, 1e0),
+    'adv_period': tune.choice([1, 2, 5]),
+    # 'n_cf': 1,
+    'n_cf': tune.choice([1, 3]),
     'early_stopping_patience': 5,
     'early_stopping': True,
 }
@@ -73,7 +79,8 @@ scheduler_kwargs = {
 # }
 
 # Change this to your desired categorical covariates
-cats = ['tissue', 'Sample ID', 'sex', 'Age_bin']
+# cats = ['tissue', 'Sample ID', 'sex', 'Age_bin']
+cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
 
 setup_anndata_kwargs = {
     'layer': 'counts',
@@ -110,7 +117,7 @@ experiment = run_autotune(
     # Change this to your desired resources
     resources={"cpu": 3, "gpu": 0.2, "memory": 35 * 1024 * 1024 * 1024},
     experiment_name="dis2p_autotune",  # Change this to your desired experiment name
-    logging_dir='logs',  # Change this to your desired path
+    logging_dir='/path/to/logs',  # Change this to your desired path
     adata_path=DATA_PATH,
     sub_sample=0.1,
     setup_anndata_kwargs=setup_anndata_kwargs,
