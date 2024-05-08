@@ -1,4 +1,4 @@
-from dis2p_defunct.tuner_base import run_autotune
+from tuner_base import run_autotune
 from dis2p_defunct import dis2pvi_cE as dvi
 
 import scanpy as sc
@@ -8,7 +8,7 @@ import numpy as np
 import pickle
 
 
-DATA_PATH = '/PATH/TO/DATA.h5ad'  # Change this to your desired path
+DATA_PATH = '/nfs/team205/sm58/packages/dis2p_trials/dis2p_reproduciblity/data/eraslan_preprocessed1200_split.h5ad'  # Change this to your desired path
 adata = sc.read_h5ad(DATA_PATH)
 # Counts should be available in the 'counts' layer
 adata.X = adata.layers['counts'].copy()
@@ -110,7 +110,7 @@ experiment = run_autotune(
     # Change this to your desired resources
     resources={"cpu": 3, "gpu": 0.2, "memory": 35 * 1024 * 1024 * 1024},
     experiment_name="dis2p_autotune",  # Change this to your desired experiment name
-    logging_dir='/PATH/TO/LOGS/',  # Change this to your desired path
+    logging_dir='logs',  # Change this to your desired path
     adata_path=DATA_PATH,
     sub_sample=0.1,
     setup_anndata_kwargs=setup_anndata_kwargs,
