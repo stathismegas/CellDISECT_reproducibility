@@ -30,8 +30,8 @@ model_args = {'n_layers': tune.choice([2, 3]),
 
 train_args = {
     ##################### plan_kwargs #####################
-    'lr': tune.uniform(1e-5, 1e-2),
-    'weight_decay': 3e-6,
+    'lr': tune.loguniform(1e-5, 1e-2),
+    'weight_decay': tune.loguniform(1e-6, 1e-1),
     'new_cf_method': True,
     'lr_patience': 3,
     'lr_factor': 0.5,
@@ -46,12 +46,12 @@ trainer_actual_args = {
     # 'max_epochs': tune.choice([50, 80, 100, 150]),
     'max_epochs': 1000,
     # 'max_epochs': tune.choice([2]),
-    'batch_size': tune.choice([512]),
+    'batch_size': tune.choice([1024]),
     # 'cf_weight': tune.uniform(1e-4, 1e0),
-    'cf_weight': tune.uniform(1e-2, 1e1),
-    'beta': tune.uniform(1e-3, 1e0),
-    'clf_weight': tune.uniform(1e-3, 1e0),
-    'adv_clf_weight': tune.uniform(1e-3, 1e0),
+    'cf_weight': tune.loguniform(1e-4, 1e1),
+    'beta': tune.loguniform(1e-4, 1e0),
+    'clf_weight': tune.loguniform(1e-4, 1e0),
+    'adv_clf_weight': tune.loguniform(1e-4, 1e0),
     'adv_period': tune.choice([1, 2, 5]),
     # 'n_cf': 1,
     'n_cf': tune.choice([1, 3]),
@@ -65,13 +65,13 @@ search_space = {
     'train_args': train_args,
 }
 
-scheduler_kwargs = {
-   'mode': 'min',
-   'metric': 'loss_validation',
-   'max_t': 1000,
-   'grace_period': 5,
-   'reduction_factor': 3,
-}
+# scheduler_kwargs = {
+#    'mode': 'min',
+#    'metric': 'loss_validation',
+#    'max_t': 1000,
+#    'grace_period': 5,
+#    'reduction_factor': 3,
+# }
 
 # searcher_kwargs = {
 #     'mode': 'max',
@@ -111,11 +111,13 @@ experiment = run_autotune(
     search_space=search_space,
     # Change this to your desired number of samples (Number of runs)
     num_samples=5000,
-    scheduler="asha",
-    searcher="hyperopt",
+    # scheduler="asha",
+    scheduler="fifo",
+    # searcher="hyperopt",
+    searcher="random",
     seed=1,
     # Change this to your desired resources
-    resources={"cpu": 3, "gpu": 0.2, "memory": 35 * 1024 * 1024 * 1024},
+    resources={"cpu": 2, "gpu": 0.2, "memory": 35 * 1024 * 1024 * 1024},
     experiment_name="dis2p_autotune",  # Change this to your desired experiment name
     logging_dir='/path/to/logs',  # Change this to your desired path
     adata_path=DATA_PATH,
