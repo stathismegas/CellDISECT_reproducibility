@@ -24,7 +24,6 @@ adata = adata[adata.X.sum(1) != 0].copy()
 cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
 split_key = 'split_Epithelial_luminal'
 
-# The loss term has a "* 10" for the reconstruction loss
 arch_dict = {'n_layers': 2,
  'n_hidden': 128,
  'n_latent_shared': 10,
@@ -34,6 +33,7 @@ arch_dict = {'n_layers': 2,
 train_dict = {
  'max_epochs': 350,
  'batch_size': 512,
+ 'recon_weight': 10,
  'cf_weight': 0.05149,
  'beta': 0.0029,
  'clf_weight': 0.4,
