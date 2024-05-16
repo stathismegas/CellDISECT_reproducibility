@@ -1,5 +1,5 @@
 import sys
-cf_weight = sys.argv[1]
+cf_weight = float(sys.argv[1])
 
 
 import os
