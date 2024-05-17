@@ -67,7 +67,7 @@ if not os.path.exists(pre_path):
 
 
 # specify a name for your model
-model_name =  f'dis2p_cE_{split_key}_AblationCF_{n_layers}_{n_hidden}_{n_latent}'
+model_name =  f'dis2p_cE_{split_key}_AblationSize_{n_layers}_{n_hidden}_{n_latent}'
 wandb_logger = WandbLogger(project=f"Dis2PVI_cE_{split_key}_AblationSize", name=model_name)
 train_dict['logger'] = wandb_logger
 wandb_logger.experiment.config.update({'train_dict': train_dict, 'arch_dict': arch_dict, 'plan_kwargs': plan_kwargs})
