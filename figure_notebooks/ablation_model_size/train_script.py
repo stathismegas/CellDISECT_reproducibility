@@ -1,7 +1,7 @@
 import sys
-n_layers = float(sys.argv[1])
-n_hidden = float(sys.argv[2])
-n_latent = float(sys.argv[3])
+n_layers = int(sys.argv[1])
+n_hidden = int(sys.argv[2])
+n_latent = int(sys.argv[3])
 
 
 import os
