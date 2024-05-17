@@ -39,7 +39,7 @@ train_dict = {
  'max_epochs': 100,
  'batch_size': 1024,
  'recon_weight': 10,
- 'cf_weight': cf_weight,
+ 'cf_weight': 0.5,
  'beta': 0.0029,
  'clf_weight': 0.4,
  'adv_clf_weight': 0.2,
