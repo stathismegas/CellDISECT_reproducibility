@@ -60,15 +60,15 @@ plan_kwargs = {
 }
 
 
-module_name = f'ablation_dis2p_cfW'
+module_name = f'ablation_dis2p_size'
 pre_path = f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/models/{module_name}'
 if not os.path.exists(pre_path):
     os.makedirs(pre_path)
 
 
 # specify a name for your model
-model_name =  f'dis2p_cE_{split_key}_cfW_{cf_weight}'
-wandb_logger = WandbLogger(project=f"Dis2PVI_cE_{split_key}_AblationCF", name=model_name)
+model_name =  f'dis2p_cE_{split_key}_AblationCF_{n_layers}_{n_hidden}_{n_latent}'
+wandb_logger = WandbLogger(project=f"Dis2PVI_cE_{split_key}_AblationSize", name=model_name)
 train_dict['logger'] = wandb_logger
 wandb_logger.experiment.config.update({'train_dict': train_dict, 'arch_dict': arch_dict, 'plan_kwargs': plan_kwargs})
 try: # Clean up the directory if it exists, overwrite the model
