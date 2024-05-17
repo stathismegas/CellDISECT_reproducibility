@@ -3,6 +3,7 @@ import biolord
 import scanpy as sc
 
 adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/eraslan_preprocessed1212_split_deg.h5ad')
+adata = adata[adata.layers['counts'].sum(1) != 0].copy()
 cats = ['tissue', 'Sample ID', 'Age_bin', 'CoarseCellType']
 split_key = 'split_4'
 
