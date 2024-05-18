@@ -26,14 +26,14 @@ cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
 split_key = 'split_2'
 
 arch_dict = {'n_layers': 2,
- 'n_hidden': 128,
- 'n_latent_shared': 10,
- 'n_latent_attribute': 10,
+ 'n_hidden': 2048,
+ 'n_latent_shared': 512,
+ 'n_latent_attribute': 512,
  'dropout_rate': 0.2,
  'weighted_classifier': True,
 }
 train_dict = {
- 'max_epochs': 100,
+ 'max_epochs': 350,
  'batch_size': 1024,
  'recon_weight': 10,
  'cf_weight': cf_weight,
@@ -57,7 +57,7 @@ plan_kwargs = {
 }
 
 
-module_name = f'ablation_dis2p_cfW'
+module_name = f'ablation_dis2p_cfW_betterModelSize'
 pre_path = f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/models/{module_name}'
 if not os.path.exists(pre_path):
     os.makedirs(pre_path)
@@ -65,7 +65,7 @@ if not os.path.exists(pre_path):
 
 # specify a name for your model
 model_name =  f'dis2p_cE_{split_key}_cfW_{cf_weight}'
-wandb_logger = WandbLogger(project=f"Dis2PVI_cE_{split_key}_AblationCF", name=model_name)
+wandb_logger = WandbLogger(project=f"Dis2PVI_cE_{split_key}_AblationCF_betterModelSize", name=model_name)
 train_dict['logger'] = wandb_logger
 wandb_logger.experiment.config.update({'train_dict': train_dict, 'arch_dict': arch_dict, 'plan_kwargs': plan_kwargs})
 try: # Clean up the directory if it exists, overwrite the model
