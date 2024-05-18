@@ -22,9 +22,9 @@ cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
 split_key = 'split_2'
 
 arch_dict = {'n_layers': 2,
- 'n_hidden': 128,
- 'n_latent_shared': 10,
- 'n_latent_attribute': 10,
+ 'n_hidden': 2048,
+ 'n_latent_shared': 512,
+ 'n_latent_attribute': 512,
  'dropout_rate': 0.2,
  'weighted_classifier': True,
 }
@@ -32,7 +32,7 @@ train_dict = {
  'max_epochs': 350,
  'batch_size': 1024,
  'recon_weight': 10,
- 'cf_weight': 0.1,
+ 'cf_weight': 0.5,
  'beta': 0.0029,
  'clf_weight': 0.4,
  'adv_clf_weight': 0.2,
