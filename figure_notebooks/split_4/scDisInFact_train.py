@@ -29,7 +29,7 @@ reg_kl_diff = 1e-2
 reg_class = 1
 reg_gl = 1
 
-Ks = [40, 40, 40, 40, 40, 40]
+Ks = [40, 40, 40, 40, 40]
 
 batch_size = 64
 nepochs = 300
