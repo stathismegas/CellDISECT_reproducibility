@@ -36,15 +36,15 @@ arch_dict = {'n_layers': n_layers,
 }
 train_dict = {
  'max_epochs': 350,
- 'batch_size': 64,
- 'recon_weight': 10,
- 'cf_weight': 0.5,
- 'beta': 0.0029,
- 'clf_weight': 0.4,
- 'adv_clf_weight': 0.1,
- 'adv_period': 4,
+ 'batch_size': 128,
+ 'recon_weight': 1,
+ 'cf_weight': 1,
+ 'beta': 1,
+ 'clf_weight': 1,
+ 'adv_clf_weight': 1,
+ 'adv_period': 5,
  'n_cf': 1,
- 'early_stopping_patience': 25,
+ 'early_stopping_patience': 15,
  'early_stopping': True,
  'save_best': True,
  'kappa_optimizer2': False,
@@ -55,13 +55,13 @@ plan_kwargs = {
  'weight_decay': 0.001,
  'new_cf_method': True,
  'lr_patience': 5,
- 'lr_factor': 0.9,
+ 'lr_factor': 0.5,
  'lr_scheduler_metric': 'loss_validation',
  'n_epochs_kl_warmup': 10,
 }
 
 
-module_name = f'kang_ablation_dis2p_size'
+module_name = f'kang_ablation_dis2p_size_all1'
 pre_path = f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/models/{module_name}'
 if not os.path.exists(pre_path):
     os.makedirs(pre_path)

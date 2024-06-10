@@ -4,7 +4,7 @@ cd /lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/fig
 
 n_layers="2 4"
 n_hidden="128 512 1024 2048"
-n_latent="10 128 512 1024"
+n_latent="32 128 512 1024"
 for layer in $n_layers; do
     for hidden in $n_hidden; do
         for latent in $n_latent; do
