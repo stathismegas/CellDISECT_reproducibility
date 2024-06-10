@@ -9,7 +9,7 @@ i=0
 for split in "${split_key[@]}"; do
     i=$((i + 1))
     for d in $cfweights; do
-        echo "python train_script.py ${d} " \"${split}\"" | \
+        echo "python train_script.py ${d} \"${split}\"" | \
             bsub -J ablation_cfW${d}_${i} -G teichlab -o logfile-${d}_${i}.out -e logfile-${d}_${i}.err -q gpu-lotfollahi -n2 -M16000 -R"select[mem>16000] rusage[mem=16000]" -gpu "mode=shared:num=1:gmem=10000"
     done
 done
