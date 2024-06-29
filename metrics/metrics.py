@@ -312,9 +312,9 @@ def Mixed_KSG_MI_metrics(adata, cats, module_name, pre_MI=None):
         mi = Mixed_KSG_MI(Z[i], Si)
         mi_not = Mixed_KSG_MI(Z_not[i-1], Si)
         if pre_MI is None:
-            mi_not_max = sorted(Mixed_KSG_MI(Z[j], Si) for j in range(len(Z)))[-2]
+            mi_not_max = sorted(Mixed_KSG_MI(Z[j], Si) for j in range(len(Z)) if j != i)[-1]
         else:
-            mi_not_max = sorted(pre_MI[i-1][j] for j in range(len(pre_MI[i-1])))[-2]
+            mi_not_max = sorted(pre_MI[i-1][j] for j in range(len(pre_MI[i-1])) if j != i)[-1]
 
         MI.append(mi)
         MI_not.append(mi_not)
