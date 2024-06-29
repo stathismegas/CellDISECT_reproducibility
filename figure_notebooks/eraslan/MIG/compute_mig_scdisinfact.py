@@ -14,7 +14,8 @@ import pandas as pd
 import pickle
 import warnings
 
-os.chdir('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility')
+import sys
+sys.path.insert(1, '/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility')
 from metrics.metrics import Mixed_KSG_MI_metrics, create_cats_idx
 
 adata = sc.read_h5ad('../eraslan_preprocessed1212_split_deg.h5ad')
