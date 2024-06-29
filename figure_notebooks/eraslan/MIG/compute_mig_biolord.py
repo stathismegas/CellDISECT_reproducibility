@@ -20,7 +20,6 @@ from metrics.metrics import Mixed_KSG_MI_metrics, create_cats_idx
 
 adata = sc.read_h5ad('../eraslan_preprocessed1212_split_deg.h5ad')
 adata = adata[adata.layers['counts'].sum(1) != 0].copy()
-sc.pp.subsample(adata, fraction=0.1)
 
 cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
 pre_path = '../models/'
@@ -28,7 +27,6 @@ pre_path = '../models/'
 biolord_model_path = 'biolord/eraslan_biolord_basicSettings_nb_split_2/'
 
 biolord_model = biolord.Biolord.load(f"{pre_path}/{biolord_model_path}", adata=adata)
-
 
 for i, cat in enumerate(cats):
     nullify = [c for c in cats if c != cat]
@@ -50,6 +48,9 @@ adata.obsm[f'Biolord_Z_0'] = latent_unknown_attributes_adata.X.copy()
 
 create_cats_idx(adata, cats)
 module_name = "Biolord"
+sc.pp.subsample(adata, fraction=0.1)
+import gc
+gc.collect()
 
 MI, MI_not_max, MI_not, MI_dif_max, MI_dif, maxMIG, concatMIG = Mixed_KSG_MI_metrics(adata, cats, module_name)
 results = [MI, MI_not_max, MI_not, MI_dif_max, MI_dif, maxMIG, concatMIG]

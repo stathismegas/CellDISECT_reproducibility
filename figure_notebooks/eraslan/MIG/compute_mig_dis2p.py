@@ -20,7 +20,6 @@ from metrics.metrics import Mixed_KSG_MI_metrics, create_cats_idx
 
 adata = sc.read_h5ad('../eraslan_preprocessed1212_split_deg.h5ad')
 adata = adata[adata.layers['counts'].sum(1) != 0].copy()
-sc.pp.subsample(adata, fraction=0.1)
 
 cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
 pre_path = '../models/'
@@ -43,6 +42,9 @@ for i in range(len(cats)):
 
 create_cats_idx(adata, cats)
 module_name = "dis2p_cE"
+sc.pp.subsample(adata, fraction=0.1)
+import gc
+gc.collect()
 
 MI, MI_not_max, MI_not, MI_dif_max, MI_dif, maxMIG, concatMIG = Mixed_KSG_MI_metrics(adata, cats, module_name)
 results = [MI, MI_not_max, MI_not, MI_dif_max, MI_dif, maxMIG, concatMIG]
