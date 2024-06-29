@@ -41,7 +41,7 @@ for i in range(len(cats)):
 
 create_cats_idx(adata, cats)
 module_name = "dis2p_cE"
-sc.pp.subsample(adata, fraction=0.1)
+# sc.pp.subsample(adata, fraction=0.1)
 import gc
 gc.collect()
 

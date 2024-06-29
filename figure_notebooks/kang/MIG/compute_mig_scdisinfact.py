@@ -97,7 +97,7 @@ for i in range(1, len(cats)+1):
 
 create_cats_idx(adata, cats)
 module_name = "scDisInfact"
-sc.pp.subsample(adata, fraction=0.1)
+# sc.pp.subsample(adata, fraction=0.1)
 import gc
 gc.collect()
 

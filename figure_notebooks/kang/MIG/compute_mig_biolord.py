@@ -48,7 +48,7 @@ adata.obsm[f'Biolord_Z_0'] = latent_unknown_attributes_adata.X.copy()
 
 create_cats_idx(adata, cats)
 module_name = "Biolord"
-sc.pp.subsample(adata, fraction=0.1)
+# sc.pp.subsample(adata, fraction=0.1)
 import gc
 gc.collect()
 
