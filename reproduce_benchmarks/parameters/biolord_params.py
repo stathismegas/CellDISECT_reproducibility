@@ -38,15 +38,3 @@ train_method_params = {
     "num_workers": 1,
     "enable_checkpointing": False,
 }
-
-model.train(
-    max_epochs=train_method_params["max_epochs"],
-    batch_size=train_method_params["batch_size"],
-    plan_kwargs=trainer_params,
-    early_stopping=train_method_params["early_stopping"],
-    early_stopping_patience=train_method_params["early_stopping_patience"],
-    check_val_every_n_epoch=train_method_params["check_val_every_n_epoch"],
-    num_workers=train_method_params["num_workers"],
-    enable_checkpointing=train_method_params["enable_checkpointing"],
-)
-
