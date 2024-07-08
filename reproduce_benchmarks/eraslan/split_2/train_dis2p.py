@@ -1,3 +1,19 @@
+import sys, importlib
+from pathlib import Path
+
+file = Path(__file__).resolve()
+level=3
+parent, top = file.parent, file.parents[level]
+sys.path.append(str(top))
+try:
+    sys.path.remove(str(parent))
+except ValueError: # already removed
+    pass
+__package__ = '.'.join(parent.parts[len(top.parts):])
+importlib.import_module(__package__)
+
+from ...parameters.dis2p_params import train_dict, arch_dict, plan_kwargs
+
 import os
 import shutil
 
@@ -11,8 +27,6 @@ import warnings
 warnings.simplefilter("ignore", UserWarning)
 
 from dis2p import dis2pvi_cE as dvi
-
-from reproduce_benchmarks.parameters.dis2p_params import train_dict, arch_dict, plan_kwargs
 
 scvi.settings.seed = 42
 

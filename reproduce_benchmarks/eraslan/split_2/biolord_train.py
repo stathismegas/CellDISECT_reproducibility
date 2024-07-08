@@ -1,8 +1,23 @@
+import sys, importlib
+from pathlib import Path
+
+file = Path(__file__).resolve()
+level=3
+parent, top = file.parent, file.parents[level]
+sys.path.append(str(top))
+try:
+    sys.path.remove(str(parent))
+except ValueError: # already removed
+    pass
+__package__ = '.'.join(parent.parts[len(top.parts):])
+importlib.import_module(__package__)
+
+from ...parameters.biolord import train_method_params, n_latent, module_params, trainer_params
+
 import biolord
 
 import scanpy as sc
 
-from reproduce_benchmarks.parameters.biolord import train_method_params, n_latent, module_params, trainer_params
 
 adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/eraslan_preprocessed1212_split_deg.h5ad')
 adata = adata[adata.layers['counts'].sum(1) != 0].copy()

@@ -1,9 +1,18 @@
-from scDisInFact import scdisinfact, create_scdisinfact_dataset
-import scanpy as sc
-import pandas as pd
-import torch
+import sys, importlib
+from pathlib import Path
 
-from reproduce_benchmarks.parameters.scdisinfact_params import (
+file = Path(__file__).resolve()
+level=3
+parent, top = file.parent, file.parents[level]
+sys.path.append(str(top))
+try:
+    sys.path.remove(str(parent))
+except ValueError: # already removed
+    pass
+__package__ = '.'.join(parent.parts[len(top.parts):])
+importlib.import_module(__package__)
+
+from ...parameters.scdisinfact_params import (
     reg_mmd_comm,
     reg_mmd_diff,
     reg_kl_comm,
@@ -18,6 +27,13 @@ from reproduce_benchmarks.parameters.scdisinfact_params import (
     lr, 
     lambs
 )
+
+from scDisInFact import scdisinfact, create_scdisinfact_dataset
+import scanpy as sc
+import pandas as pd
+import torch
+
+
 
 split_key = 'split_2'
 
