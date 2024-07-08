@@ -33,8 +33,8 @@ scvi.settings.seed = 42
 adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/eraslan_preprocessed1212_split_deg.h5ad')
 adata = adata[adata.X.sum(1) != 0].copy()
 
-cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
-split_key = 'split_2'
+cats = ['tissue', 'Sample ID', 'Age_bin', 'CoarseCellType']
+split_key = 'split_4'
 
 module_name = f'dis2p_cE_{split_key}'
 pre_path = f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/models/{module_name}'
