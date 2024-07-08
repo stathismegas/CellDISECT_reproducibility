@@ -12,7 +12,7 @@ except ValueError: # already removed
 __package__ = '.'.join(parent.parts[len(top.parts):])
 importlib.import_module(__package__)
 
-from ...parameters.biolord import train_method_params, n_latent, module_params, trainer_params
+from ...parameters.biolord_params import train_method_params, n_latent, module_params, trainer_params
 
 import biolord
 
