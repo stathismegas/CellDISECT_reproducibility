@@ -45,6 +45,7 @@ train_dict = {
  'early_stopping': True,
  'save_best': True,
  'kappa_optimizer2': False,
+ 'n_epochs_pretrain_ae': 0,
 }
 
 plan_kwargs = {
@@ -55,8 +56,6 @@ plan_kwargs = {
  'lr_factor': 0.5,
  'lr_scheduler_metric': 'loss_validation',
  'n_epochs_kl_warmup': 10,
- 'n_epochs_pretrain_ae': 0,
-
 }
 
 
