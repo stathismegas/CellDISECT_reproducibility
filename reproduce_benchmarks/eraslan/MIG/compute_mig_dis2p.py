@@ -25,7 +25,12 @@ adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/erasla
 adata = adata[adata.X.sum(1) != 0].copy()
 adata = adata[adata.obs[split_key] == 'val'].copy()
 
-cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
+if split_key in ['split_1', 'split_2']:
+    cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
+elif split_key in ['split_3', 'split_4']:
+    cats = ['tissue', 'Sample ID', 'Age_bin', 'CoarseCellType']
+else:
+    raise ValueError(f"split_key {split_key} not recognized")
 
 pre_path = '../models/'
 
