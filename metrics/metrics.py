@@ -54,7 +54,7 @@ def create_cats_idx(adata, cats):
 
         val_to_idx = {v: values.index(v) for v in values}
 
-        idx_list = [val_to_idx[v] for v in adata.obs[cats[i]]]
+        idx_list = [val_to_idx[v]*100 for v in adata.obs[cats[i]]]
 
         adata.obs[cats[i] + '_idx'] = pd.Categorical(idx_list)
 
