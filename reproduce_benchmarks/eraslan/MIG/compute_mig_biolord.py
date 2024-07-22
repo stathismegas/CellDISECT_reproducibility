@@ -22,7 +22,6 @@ from metrics.metrics import Mixed_KSG_MI_metrics, create_cats_idx
 
 adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/eraslan_preprocessed1212_split_deg.h5ad')
 adata = adata[adata.X.sum(1) != 0].copy()
-adata = adata[adata.obs[split_key] == 'val'].copy()
 
 cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
 
@@ -50,6 +49,7 @@ for i, cat in enumerate(cats):
 
 adata.obsm[f'Biolord_Z_0'] = latent_unknown_attributes_adata.X.copy()
 
+adata = adata[adata.obs[split_key] == 'val'].copy()
 
 create_cats_idx(adata, cats)
 module_name = "Biolord"

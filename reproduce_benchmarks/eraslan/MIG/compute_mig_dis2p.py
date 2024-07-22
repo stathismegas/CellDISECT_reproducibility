@@ -31,7 +31,7 @@ pre_path = '../models/'
 
 dis2p_model_path = (
     f'dis2p_cE_{split_key}/'
-    f'pretrainAE_10_maxEpochs_100_split_{split_key}_reconW_20_cfWeight_1.5_beta_0.003_clf_0.8_adv_0.015_advp_5_n_cf_1_lr_0.01_wd_0.0005_new_cf_True_dropout_0.2_n_hidden_128_n_latent_32_n_layers_2_batch_size_256/'
+    f'pretrainAE_10_maxEpochs_100_split_{split_key}_reconW_20_cfWeight_1.5_beta_0.003_clf_0.8_adv_0.015_advp_5_n_cf_1_lr_0.01_wd_0.0005_new_cf_True_dropout_0.2_n_hidden_128_n_latent_32_n_layers_2/'
     )
 
 model = dvi.Dis2pVI_cE.load(f"{pre_path}/{dis2p_model_path}", adata=adata)

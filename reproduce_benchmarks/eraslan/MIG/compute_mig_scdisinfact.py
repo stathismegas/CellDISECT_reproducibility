@@ -24,7 +24,7 @@ from metrics.metrics import Mixed_KSG_MI_metrics, create_cats_idx
 
 adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/eraslan_preprocessed1212_split_deg.h5ad')
 adata = adata[adata.X.sum(1) != 0].copy()
-adata = adata[adata.obs[split_key] == 'val'].copy()
+adata = adata[adata.obs[split_key].isin(['train', 'val'])].copy()
 
 cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
 
@@ -91,6 +91,7 @@ for i in range(1, len(cats)+1):
     z_not_ds_cond = np.concatenate([adata.obsm[f'scDisInfact_Z_{j}'].copy() for j in range(len(cats)+1) if j != i], axis=1)
     adata.obsm[f'scDisInfact_Z_not_{i}'] = z_not_ds_cond.copy()
     
+adata = adata[adata.obs[split_key] == 'val'].copy()
 create_cats_idx(adata, cats)
 module_name = "scDisInfact"
 MI, MI_not_max, MI_not, MI_dif_max, MI_dif, maxMIG, concatMIG = Mixed_KSG_MI_metrics(adata, cats, module_name)
