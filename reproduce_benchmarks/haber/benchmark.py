@@ -1,4 +1,3 @@
-from types import CellType
 import scanpy as sc
 import pandas as pd
 import numpy as np
@@ -206,10 +205,10 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
             
             dis2p_model_path = (
                 f'dis2p_cE_split_{scenario}_{cell_type_to_check}_{cond_path_name}/'
-                f'pretrainAE_10_maxEpochs_100_split_split_{scenario}_{CellType}_{cond_path_name}_reconW_20_cfWeight_1.5_beta_0.003_clf_0.8_adv_0.015_advp_5_n_cf_1_lr_0.01_wd_0.0005_new_cf_True_dropout_0.2_n_hidden_128_n_latent_32_n_layers_2'
+                f'pretrainAE_10_maxEpochs_100_split_split_{scenario}_{cell_type_to_check}_{cond_path_name}_reconW_20_cfWeight_1.5_beta_0.003_clf_0.8_adv_0.015_advp_5_n_cf_1_lr_0.01_wd_0.0005_new_cf_True_dropout_0.2_n_hidden_128_n_latent_32_n_layers_2'
             )
-            biolord_model_path = f'biolord/haber_biolord_earlierStop_basicSettings_nb_split_{scenario}_{CellType}_{cond_path_name}/'
-            scdisinfact_model_path = f'scDisInfact/haber_scdisinfact_defaultSettings_fsplit_{scenario}_{CellType}_{cond_path_name}.pth'
+            biolord_model_path = f'biolord/haber_biolord_earlierStop_basicSettings_nb_split_{scenario}_{cell_type_to_check}_{cond_path_name}/'
+            scdisinfact_model_path = f'scDisInfact/haber_scdisinfact_defaultSettings_fsplit_{scenario}_{cell_type_to_check}_{cond_path_name}.pth'
             
             model, biolord_model, scdisinfact_model = load_models(dis2p_model_path, biolord_model_path, scdisinfact_model_path)
             
