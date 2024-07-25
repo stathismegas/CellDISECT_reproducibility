@@ -1,3 +1,6 @@
+import sys
+split_key = sys.argv[1]
+
 import sys, importlib
 from pathlib import Path
 
@@ -35,7 +38,6 @@ import torch
 adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/haber_hvg_split.h5ad')
 adata = adata[adata.X.sum(1) != 0].copy()
 
-split_key = 'split_targetOut_Tuft_salmonella'
 
 adata = adata[adata.obs[split_key] == 'train'].copy()
 adata.obs['one'] = pd.Categorical([1 for _ in range(adata.n_obs)]) # Dummy observation for batch (We treat Sample ID/Batch as covariate)

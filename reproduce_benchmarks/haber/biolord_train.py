@@ -1,3 +1,6 @@
+import sys
+split_key = sys.argv[1]
+
 import sys, importlib
 from pathlib import Path
 
@@ -22,7 +25,6 @@ adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/haber_
 adata = adata[adata.X.sum(1) != 0].copy()
 
 cats = ['batch', 'condition', 'cell_label',]
-split_key = 'split_targetOut_Tuft_salmonella'
 
 biolord.Biolord.setup_anndata(
     adata=adata,
