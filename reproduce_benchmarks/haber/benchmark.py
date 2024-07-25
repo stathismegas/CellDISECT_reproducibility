@@ -321,6 +321,6 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
                 
             r2_results_subtract = pd.DataFrame.from_dict(r2_results_subtract).T
 
-            r2_results.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/haber/cf_results/haber_split_{scenario}_{CellType}_{cond_path_name}_pearson.csv')
-            r2_results_subtract.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/haber/cf_results/haber_split_{scenario}_{CellType}_{cond_path_name}_delta_pearson.csv')
+            r2_results.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/haber/cf_results/haber_split_{scenario}_{cell_type_to_check}_{cond_path_name}_pearson.csv')
+            r2_results_subtract.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/haber/cf_results/haber_split_{scenario}_{cell_type_to_check}_{cond_path_name}_delta_pearson.csv')
             gc.collect()
