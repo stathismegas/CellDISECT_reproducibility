@@ -188,10 +188,7 @@ def scdisinfact_pred(
     
     return x_scdisinfact
 
-ood_cts = []
-for key in adata.obs.keys():
-    if 'split' in key:
-        ood_cts.append(key.split('_')[1])
+ood_cts = adata.obs['cell_label'].unique()
 
 for cond in ['Salmonella', 'Hpoly.Day10']:
     if cond == 'Salmonella':
