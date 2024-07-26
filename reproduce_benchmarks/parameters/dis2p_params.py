@@ -6,10 +6,10 @@ arch_dict = {'n_layers': 2,
  'weighted_classifier': True,
 }
 train_dict = {
- 'max_epochs': 350,
+ 'max_epochs': 100,
  'batch_size': 256,
- 'recon_weight': 30,
- 'cf_weight': 0.8,
+ 'recon_weight': 20,
+ 'cf_weight': 1.5,
  'beta': 0.003,
  'clf_weight': 0.8,
  'adv_clf_weight': 0.015,
@@ -19,12 +19,12 @@ train_dict = {
  'early_stopping': True,
  'save_best': True,
  'kappa_optimizer2': False,
- 'n_epochs_pretrain_ae': 30,
+ 'n_epochs_pretrain_ae': 10,
 }
 
 plan_kwargs = {
- 'lr': 0.001,
- 'weight_decay': 0.00008,
+ 'lr': 0.01,
+ 'weight_decay': 0.0005,
  'new_cf_method': True,
  'lr_patience': 6,
  'lr_factor': 0.5,
