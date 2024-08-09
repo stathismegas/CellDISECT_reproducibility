@@ -14,6 +14,7 @@ import biolord
 import pickle
 import warnings
 
+import sys
 sys.path.insert(1, '/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility')
 os.chdir('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility')
 from metrics.metrics import Mixed_KSG_MI_metrics, create_cats_idx
@@ -41,7 +42,7 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
 
         pre_path = '../models/'
 
-        biolord_model_path = f'biolord/eraslan_biolord_earlierStop_basicSettings_nb_{split_key}/'
+        biolord_model_path = f'biolord/haber_biolord_earlierStop_basicSettings_nb_{split_key}/'
         
         adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/haber_hvg_split.h5ad')
         adata = adata[adata.X.sum(1) != 0].copy()

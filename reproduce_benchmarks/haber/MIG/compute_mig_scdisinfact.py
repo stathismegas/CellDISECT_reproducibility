@@ -46,7 +46,7 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
         cats = ['batch', 'condition', 'cell_label',]
 
         pre_path = '../models/'
-        scdisinfact_model_path = f'scDisInfact/eraslan_scdisinfact_defaultSettings_f{split_key}.pth'
+        scdisinfact_model_path = f'scDisInfact/haber_scdisinfact_defaultSettings_f{split_key}.pth'
 
         condition_key = cats
 
