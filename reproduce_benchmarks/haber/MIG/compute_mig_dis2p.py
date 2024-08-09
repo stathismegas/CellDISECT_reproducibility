@@ -36,7 +36,7 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
     for cell_type_to_check in ood_cts:
         gc.collect()
 
-        split_key = f'{scenario}_{cell_type_to_check}_{cond_path_name}'
+        split_key = f'split_{scenario}_{cell_type_to_check}_{cond_path_name}'
 
         cats = ['batch', 'condition', 'cell_label',]
 

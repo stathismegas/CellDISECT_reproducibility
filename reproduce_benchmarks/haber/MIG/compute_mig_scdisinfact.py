@@ -37,7 +37,7 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
     for cell_type_to_check in ood_cts:
         gc.collect()
 
-        split_key = f'{scenario}_{cell_type_to_check}_{cond_path_name}'
+        split_key = f'split_{scenario}_{cell_type_to_check}_{cond_path_name}'
         
         adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/haber_hvg_split.h5ad')
         adata = adata[adata.X.sum(1) != 0].copy()
