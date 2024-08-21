@@ -177,6 +177,7 @@ for n_top_deg in [20, None]:
     x_ctrl_deg = x_ctrl[:, degs]
     x_biolord_deg = x_biolord[:, degs]
     
+    emd_results[str(n_top_deg)] = {}
     for method_name, method in zip(['Dis2P', 'Biolord', 'Control'], [x_pred_deg, x_biolord_deg, x_ctrl_deg]):
         wd = []
         for i in range(x_true_deg.shape[1]):
