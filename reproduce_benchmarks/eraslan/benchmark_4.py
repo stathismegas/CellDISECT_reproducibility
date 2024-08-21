@@ -8,6 +8,7 @@ import gc
 import torch
 import random
 from scipy.stats import pearsonr
+from scipy.stats import wasserstein_distance
 import scipy
 
 RANDOM_SEED = 42
@@ -162,6 +163,30 @@ x_biolord = biolord_pred(
     n_samples_from_source=n_samples_from_source,
 )
 deg_list = adata.uns['rank_genes_groups_split_4']['Immune (alveolar macrophage)_lingula of left lung']
+
+emd_results = {}
+for n_top_deg in [20, None]:
+    if n_top_deg is not None:
+        degs = np.where(np.isin(adata.var_names, deg_list[:n_top_deg]))[0]
+    else:
+        degs = np.arange(adata.n_vars)
+        n_top_deg = 'all'
+
+    x_true_deg = x_true[:, degs]
+    x_pred_deg = x_pred[:, degs]
+    x_ctrl_deg = x_ctrl[:, degs]
+    x_biolord_deg = x_biolord[:, degs]
+    
+    for method_name, method in zip(['Dis2P', 'Biolord', 'Control'], [x_pred_deg, x_biolord_deg, x_ctrl_deg]):
+        wd = []
+        for i in range(x_true_deg.shape[1]):
+            wd.append(
+                wasserstein_distance(torch.tensor(x_true_deg[:, i]), torch.tensor(method[:, i]))
+            )
+        emd_results[str(n_top_deg)][method_name] = np.mean(wd)
+
+emd_results = pd.DataFrame.from_dict(emd_results).T
+
 r2_results = {}
 for n_top_deg in [20, None]:
     if n_top_deg is not None:
@@ -225,6 +250,7 @@ for n_top_deg in [20, None]:
     
 r2_results_subtract = pd.DataFrame.from_dict(r2_results_subtract).T
 
+emd_results.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/eraslan/cf_results/eraslan_bingo_{split_name}_emd.csv')
 r2_results.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/eraslan/cf_results/eraslan_bingo_{split_name}_pearson.csv')
 r2_results_subtract.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/eraslan/cf_results/eraslan_bingo_{split_name}_delta_pearson.csv')
 gc.collect()
