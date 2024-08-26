@@ -200,7 +200,7 @@ gc.collect()
 
 dis2p_model_path = (
     f'dis2p_cE_{split_name}/'
-f'pretrainAE_0_maxEpochs_1000_split_{split_name}_reconW_20_cfWeight_0.8_beta_0.003_clf_0.05_adv_0.014_advp_5_n_cf_1_lr_0.003_wd_5e-05_new_cf_True_dropout_0.1_n_hidden_128_n_latent_32_n_layers_2_batch_size_256_NoCT'
+f'pretrainAE_0_maxEpochs_1000_split_{split_name}_reconW_20_cfWeight_0.8_beta_0.003_clf_0.05_adv_0.014_advp_5_n_cf_1_lr_0.003_wd_5e-05_new_cf_True_dropout_0.1_n_hidden_128_n_latent_32_n_layers_2batch_size_256_NoCT'
 )
 biolord_model_path = f'biolord/eraslan_biolord_NoCT_earlierStop_basicSettings_nb_{split_name}/'
 scdisinfact_model_path = f'scDisInfact/eraslan_scdisinfact_NoCT_defaultSettings_f{split_name}.pth'
