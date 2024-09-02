@@ -24,14 +24,14 @@ adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/erasla
 adata = adata[adata.X.sum(1) != 0].copy()
 
 if split_key in ['split_1', 'split_2']:
-    cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
-elif split_key in ['split_3', 'split_4']:
-    cats = ['tissue', 'Sample ID', 'Age_bin', 'CoarseCellType']
+    cats = ['tissue', 'Sample ID', 'sex', 'Age_bin']
+elif split_key in ['split_4']:
+    cats = ['tissue', 'Sample ID', 'Age_bin']
 else:
     raise ValueError(f"split_key {split_key} not recognized")
 pre_path = '../models/'
 
-biolord_model_path = f'biolord/eraslan_biolord_earlierStop_basicSettings_nb_{split_key}/'
+biolord_model_path = f'biolord/eraslan_biolord_NoCT_earlierStop_basicSettings_nb_{split_key}/'
 
 biolord_model = biolord.Biolord.load(f"{pre_path}/{biolord_model_path}", adata=adata)
 

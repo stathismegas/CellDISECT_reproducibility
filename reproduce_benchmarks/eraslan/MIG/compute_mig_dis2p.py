@@ -26,9 +26,9 @@ adata = adata[adata.X.sum(1) != 0].copy()
 adata = adata[adata.obs[split_key] == 'val'].copy()
 
 if split_key in ['split_1', 'split_2']:
-    cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
-elif split_key in ['split_3', 'split_4']:
-    cats = ['tissue', 'Sample ID', 'Age_bin', 'CoarseCellType']
+    cats = ['tissue', 'Sample ID', 'sex', 'Age_bin']
+elif split_key in ['split_4']:
+    cats = ['tissue', 'Sample ID', 'Age_bin']
 else:
     raise ValueError(f"split_key {split_key} not recognized")
 
@@ -36,7 +36,7 @@ pre_path = '../models/'
 
 dis2p_model_path = (
     f'dis2p_cE_{split_key}/'
-    f'pretrainAE_10_maxEpochs_100_split_{split_key}_reconW_20_cfWeight_1.5_beta_0.003_clf_0.8_adv_0.015_advp_5_n_cf_1_lr_0.01_wd_0.0005_new_cf_True_dropout_0.2_n_hidden_128_n_latent_32_n_layers_2/'
+    f'pretrainAE_0_maxEpochs_1000_split_{split_key}_reconW_20_cfWeight_0.8_beta_0.003_clf_0.05_adv_0.014_advp_5_n_cf_1_lr_0.003_wd_5e-05_new_cf_True_dropout_0.1_n_hidden_128_n_latent_32_n_layers_2_batch_size_256_NoCT'
     )
 
 model = dvi.Dis2pVI_cE.load(f"{pre_path}/{dis2p_model_path}", adata=adata)

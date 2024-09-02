@@ -27,14 +27,14 @@ adata = adata[adata.X.sum(1) != 0].copy()
 adata = adata[adata.obs[split_key].isin(['train', 'val'])].copy()
 
 if split_key in ['split_1', 'split_2']:
-    cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
-elif split_key in ['split_3', 'split_4']:
-    cats = ['tissue', 'Sample ID', 'Age_bin', 'CoarseCellType']
+    cats = ['tissue', 'Sample ID', 'sex', 'Age_bin']
+elif split_key in ['split_4']:
+    cats = ['tissue', 'Sample ID', 'Age_bin']
 else:
     raise ValueError(f"split_key {split_key} not recognized")
 
 pre_path = '../models/'
-scdisinfact_model_path = f'scDisInfact/eraslan_scdisinfact_defaultSettings_f{split_key}.pth'
+scdisinfact_model_path = f'scDisInfact/eraslan_scdisinfact_NoCT_defaultSettings_f{split_key}.pth'
 
 condition_key = cats
 
