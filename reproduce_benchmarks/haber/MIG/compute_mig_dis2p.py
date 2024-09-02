@@ -44,7 +44,8 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
 
         dis2p_model_path = (
             f'dis2p_cE_{split_key}/'
-            f'pretrainAE_10_maxEpochs_100_split_{split_key}_reconW_20_cfWeight_1.5_beta_0.003_clf_0.8_adv_0.015_advp_5_n_cf_1_lr_0.01_wd_0.0005_new_cf_True_dropout_0.2_n_hidden_128_n_latent_32_n_layers_2/'
+            # f'pretrainAE_10_maxEpochs_100_split_{split_key}_reconW_20_cfWeight_1.5_beta_0.003_clf_0.8_adv_0.015_advp_5_n_cf_1_lr_0.01_wd_0.0005_new_cf_True_dropout_0.2_n_hidden_128_n_latent_32_n_layers_2/'
+            f'pretrainAE_0_maxEpochs_1000_split_{split_key}_reconW_20_cfWeight_0.8_beta_0.003_clf_0.05_adv_0.014_advp_5_n_cf_1_lr_0.003_wd_5e-05_new_cf_True_dropout_0.1_n_hidden_128_n_latent_32_n_layers_2'
             )
 
         adata = sc.read_h5ad('/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/haber_hvg_split.h5ad')
