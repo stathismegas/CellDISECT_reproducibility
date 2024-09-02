@@ -345,7 +345,7 @@ for cell_type_to_check in ood_cts:
         
     r2_results_subtract = pd.DataFrame.from_dict(r2_results_subtract).T
 
-    emd_results.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/kang/cf_results/kang_{cell_type_to_check}_emd.csv')
-    r2_results.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/kang/cf_results/kang_{cell_type_to_check}_pearson.csv')
-    r2_results_subtract.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/kang/cf_results/kang_{cell_type_to_check}_delta_pearson.csv')
+    emd_results.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/reproduce_benchmarks/kang/cf_results/kang_{cell_type_to_check}_emd.csv')
+    r2_results.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/reproduce_benchmarks/kang/cf_results/kang_{cell_type_to_check}_pearson.csv')
+    r2_results_subtract.to_csv(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/reproduce_benchmarks/kang/cf_results/kang_{cell_type_to_check}_delta_pearson.csv')
     gc.collect()
