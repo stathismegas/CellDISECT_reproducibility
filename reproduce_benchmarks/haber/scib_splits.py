@@ -204,5 +204,5 @@ for cell_type_to_check in cell_types:
                 bms[label_key][batch_key] = bm
 
         # Save the results
-        with open(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility_clean/reproduce_benchmarks/haber/scib_results/{scenario}_{cell_type_to_check}_{cond_path_name}.pkl', 'wb') as f:
+        with open(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/reproduce_benchmarks/haber/scib_results/{scenario}_{cell_type_to_check}_{cond_path_name}.pkl', 'wb') as f:
             pickle.dump(bms, f)
