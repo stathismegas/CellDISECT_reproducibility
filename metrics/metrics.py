@@ -299,9 +299,11 @@ def Mixed_KSG_MI_metrics(adata, cats, module_name, pre_MI=None):
     MI = []
     MI_not = []
     MI_not_max = []
+    MI_not_min = []
 
     MI_dif = []
     MI_dif_max = []
+    MI_dif_min = []
     H = []
 
     for i in range(1, len(cats) + 1):
@@ -312,20 +314,27 @@ def Mixed_KSG_MI_metrics(adata, cats, module_name, pre_MI=None):
         mi = Mixed_KSG_MI(Z[i], Si)
         mi_not = Mixed_KSG_MI(Z_not[i-1], Si)
         if pre_MI is None:
-            mi_not_max = sorted(Mixed_KSG_MI(Z[j], Si) for j in range(len(Z)) if j != i)[-1]
+            mi_nots = sorted(Mixed_KSG_MI(Z[j], Si) for j in range(len(Z)) if j != i)
+            mi_not_max = mi_nots[-1]
+            mi_not_min = mi_nots[0]
         else:
-            mi_not_max = sorted(pre_MI[i-1][j] for j in range(len(pre_MI[i-1])) if j != i)[-1]
+            mi_nots = sorted(pre_MI[i-1][j] for j in range(len(pre_MI[i-1])) if j != i)
+            mi_not_max = mi_nots[-1]
+            mi_not_min = mi_nots[0]
 
         MI.append(mi)
         MI_not.append(mi_not)
         MI_not_max.append(mi_not_max)
+        MI_not_min.append(mi_not_min)
 
         MI_dif.append(mi - mi_not)
         MI_dif_max.append(mi - mi_not_max)
+        MI_dif_min.append(mi - mi_not_min)
 
         print(f"MI(Z_{i} ; S_{i}) = {mi:.4f},  "
               f"MI((Z - Z_{i}) ; S_{i}) = {mi_not:.4f}, "
-              f"max MI((Z_j!={i}) ; S_{i}) = {mi_not_max:.4f}")
+              f"max MI((Z_j!={i}) ; S_{i}) = {mi_not_max:.4f}, "
+              f"min MI((Z_j!={i}) ; S_{i}) = {mi_not_min:.4f}")
 
         # entropy
 
@@ -336,17 +345,20 @@ def Mixed_KSG_MI_metrics(adata, cats, module_name, pre_MI=None):
 
     maxMIG = np.mean([MI_dif_max[i] / H[i] for i in range(len(cats))])
     concatMIG = np.mean([MI_dif[i] / H[i] for i in range(len(cats))])
+    minMIG = np.mean([MI_dif_min[i] / H[i] for i in range(len(cats))])
 
-    print(f"maxMIG = {maxMIG:.4f}, concatMIG = {concatMIG:.4f}")
+    print(f"maxMIG = {maxMIG:.4f}, concatMIG = {concatMIG:.4f}, minMIG = {minMIG:.4f}")
 
     # append averages to the end of the lists
     MI.append(np.mean(MI))
     MI_not_max.append(np.mean(MI_not_max))
+    MI_not_min.append(np.mean(MI_not_min))
     MI_not.append(np.mean(MI_not))
     MI_dif_max.append(maxMIG)
+    MI_dif_min.append(minMIG)
     MI_dif.append(concatMIG)
 
-    return MI, MI_not_max, MI_not, MI_dif_max, MI_dif, maxMIG, concatMIG
+    return MI, MI_not_max, MI_not_min, MI_not, MI_dif_max, MI_dif_min, MI_dif, maxMIG, concatMIG, minMIG
 
 
 def find_Zi_by_MI_metrics(adata, z, cats, module_name):
