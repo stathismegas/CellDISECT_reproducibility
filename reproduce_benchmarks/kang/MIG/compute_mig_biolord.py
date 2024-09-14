@@ -69,8 +69,8 @@ for cell_type_to_check in ood_cts:
 
     create_cats_idx(adata, cats)
     module_name = "Biolord"
-    MI, MI_not_max, MI_not, MI_dif_max, MI_dif, maxMIG, concatMIG = Mixed_KSG_MI_metrics(adata, cats, module_name)
-    results = [MI, MI_not_max, MI_not, MI_dif_max, MI_dif, maxMIG, concatMIG]
+    MI, MI_not_max, MI_not_min, MI_not, MI_dif_max, MI_dif_min, MI_dif, maxMIG, concatMIG, minMIG = Mixed_KSG_MI_metrics(adata, cats, module_name)
+    results = [MI, MI_not_max, MI_not_min, MI_not, MI_dif_max, MI_dif_min, MI_dif, maxMIG, concatMIG, minMIG]
 
     output_path = f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/reproduce_benchmarks/kang/MIG/results'
     if not os.path.exists(output_path):
