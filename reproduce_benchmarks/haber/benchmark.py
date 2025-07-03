@@ -1,7 +1,7 @@
 import scanpy as sc
 import pandas as pd
 import numpy as np
-from dis2p import dis2pvi_cE as dvi
+from celldisect import CellDISECT
 import biolord
 from scDisInFact import scdisinfact, create_scdisinfact_dataset
 import gc
@@ -70,11 +70,11 @@ n_samples_from_source_max = 500
 pre_path = '/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/models/'
 
 def load_models(
-    dis2p_model_path: str,
+    celldisect_model_path: str,
     biolord_model_path: str,
     scdisinfact_model_path: str,
 ):
-    model = dvi.Dis2pVI_cE.load(f"{pre_path}/{dis2p_model_path}", adata=adata)
+    model = CellDISECT.load(f"{pre_path}/{celldisect_model_path}", adata=adata)
     biolord_model = biolord.Biolord.load(f"{pre_path}/{biolord_model_path}", adata=adata_biolord)
     
     scdisinfact_model = scdisinfact(data_dict = data_dict, Ks = Ks, batch_size = batch_size, interval = interval, lr = lr, 
@@ -84,7 +84,7 @@ def load_models(
     
     return model, biolord_model, scdisinfact_model
 
-def dis2p_pred(
+def celldisect_pred(
     model,
     adata,
     cell_type_to_check,
@@ -204,19 +204,19 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
                                         len(adata[(adata.obs['cell_label'] == cell_type_to_check)
                                                 & (adata.obs['condition'] == 'Control')]))
             
-            dis2p_model_path = (
-                f'dis2p_cE_split_{scenario}_{cell_type_to_check}_{cond_path_name}/'
+            celldisect_model_path = (
+                f'celldisect_cE_split_{scenario}_{cell_type_to_check}_{cond_path_name}/'
                 f'pretrainAE_0_maxEpochs_1000_split_split_{scenario}_{cell_type_to_check}_{cond_path_name}_reconW_20_cfWeight_0.8_beta_0.003_clf_0.05_adv_0.014_advp_5_n_cf_1_lr_0.003_wd_5e-05_new_cf_True_dropout_0.1_n_hidden_128_n_latent_32_n_layers_2'
                 )
                # f'pretrainAE_10_maxEpochs_100_split_split_{scenario}_{cell_type_to_check}_{cond_path_name}_reconW_20_cfWeight_1.5_beta_0.003_clf_0.8_adv_0.015_advp_5_n_cf_1_lr_0.01_wd_0.0005_new_cf_True_dropout_0.2_n_hidden_128_n_latent_32_n_layers_2'
             biolord_model_path = f'biolord/haber_biolord_earlierStop_basicSettings_nb_split_{scenario}_{cell_type_to_check}_{cond_path_name}/'
             scdisinfact_model_path = f'scDisInfact/haber_scdisinfact_defaultSettings_fsplit_{scenario}_{cell_type_to_check}_{cond_path_name}.pth'
             
-            model, biolord_model, scdisinfact_model = load_models(dis2p_model_path, biolord_model_path, scdisinfact_model_path)
+            model, biolord_model, scdisinfact_model = load_models(celldisect_model_path, biolord_model_path, scdisinfact_model_path)
             
             print(f"Predicting for {cell_type_to_check}")
-            print("Getting predictions for Dis2P...")
-            x_ctrl, x_true, x_pred = dis2p_pred(
+            print("Getting predictions for CellDISECT...")
+            x_ctrl, x_true, x_pred = celldisect_pred(
                 model,
                 adata,
                 cell_type_to_check,
@@ -266,7 +266,7 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
                 x_scdisinfact_deg = x_scdisinfact[:, degs]
                 
                 emd_results[str(n_top_deg)] = {}
-                for method_name, method in zip(['Dis2P', 'Biolord', 'scdisinfact', 'Control'], [x_pred_deg, x_biolord_deg, x_scdisinfact_deg, x_ctrl_deg]):
+                for method_name, method in zip(['CellDISECT', 'Biolord', 'scdisinfact', 'Control'], [x_pred_deg, x_biolord_deg, x_scdisinfact_deg, x_ctrl_deg]):
                     wd = []
                     for i in range(x_true_deg.shape[1]):
                         wd.append(
@@ -303,12 +303,12 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
                 r2_var_scdisinfact_deg = pearsonr(x_true_deg.var(0), x_scdisinfact_deg.var(0))
                 
                 r2_results[str(n_top_deg)] = {}
-                r2_results[str(n_top_deg)]['Dis2P'] = r2_mean_deg[0]
+                r2_results[str(n_top_deg)]['CellDISECT'] = r2_mean_deg[0]
                 r2_results[str(n_top_deg)]['Biolord'] = r2_mean_biolord_deg[0]
                 r2_results[str(n_top_deg)]['scdisinfact'] = r2_mean_scdisinfact_deg[0]
                 r2_results[str(n_top_deg)]['Control'] = r2_mean_base_deg[0]
 
-                r2_results[str(n_top_deg)]['Dis2P_var'] = r2_var_deg[0]
+                r2_results[str(n_top_deg)]['CellDISECT_var'] = r2_var_deg[0]
                 r2_results[str(n_top_deg)]['Biolord_var'] = r2_var_biolord_deg[0]
                 r2_results[str(n_top_deg)]['scdisinfact_var'] = r2_var_scdisinfact_deg[0]
                 r2_results[str(n_top_deg)]['Control_var'] = r2_var_base_deg[0]
@@ -340,11 +340,11 @@ for cond in ['Salmonella', 'Hpoly.Day10']:
                 r2_var_scdisinfact_deg = pearsonr(x_true_deg.var(0) - x_ctrl_deg.var(0), x_scdisinfact_deg.var(0) - x_ctrl_deg.var(0))
                 
                 r2_results_subtract[str(n_top_deg)] = {}
-                r2_results_subtract[str(n_top_deg)]['Dis2P'] = r2_mean_deg[0]
+                r2_results_subtract[str(n_top_deg)]['CellDISECT'] = r2_mean_deg[0]
                 r2_results_subtract[str(n_top_deg)]['Biolord'] = r2_mean_biolord_deg[0]
                 r2_results_subtract[str(n_top_deg)]['scdisinfact'] = r2_mean_scdisinfact_deg[0]
 
-                r2_results_subtract[str(n_top_deg)]['Dis2P_var'] = r2_var_deg[0]
+                r2_results_subtract[str(n_top_deg)]['CellDISECT_var'] = r2_var_deg[0]
                 r2_results_subtract[str(n_top_deg)]['Biolord_var'] = r2_var_biolord_deg[0]
                 r2_results_subtract[str(n_top_deg)]['scdisinfact_var'] = r2_var_scdisinfact_deg[0]
                 

@@ -185,22 +185,22 @@ def asw_report(model, adata, cats):
     bio_results = []
     batch_resutls = []
     # Z_0
-    adata.obsm[f'dis2p_cE_Z_0'] = model.get_latent_representation(nullify_cat_covs_indices=[s for s in range(len(cats))], nullify_shared=False)
+    adata.obsm[f'celldisect_Z_0'] = model.get_latent_representation(nullify_cat_covs_indices=[s for s in range(len(cats))], nullify_shared=False)
 
     for i in range(len(cats)):
         null_idx = [s for s in range(len(cats)) if s != i]
         # Z_i
-        adata.obsm[f'dis2p_cE_Z_{i+1}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
+        adata.obsm[f'celldisect_Z_{i+1}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
 
     for i in range(len(cats)):
         label_key = cats[i]
-        bio = scib.metrics.silhouette(adata, label_key, f'dis2p_cE_Z_{i+1}', metric='euclidean', scale=True)
+        bio = scib.metrics.silhouette(adata, label_key, f'celldisect_Z_{i+1}', metric='euclidean', scale=True)
         bio_results.append(bio)
         for j in range(len(cats)):
             if j == i:
                 continue
             label_key = cats[j]
-            batch = scib.metrics.silhouette(adata, label_key, f'dis2p_cE_Z_{i+1}', metric='euclidean', scale=True)
+            batch = scib.metrics.silhouette(adata, label_key, f'celldisect_Z_{i+1}', metric='euclidean', scale=True)
             batch_resutls.append(batch)
             
     asw_results['ASW_bio'] = np.mean(bio_results)

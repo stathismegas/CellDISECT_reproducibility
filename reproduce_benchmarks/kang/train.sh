@@ -2,7 +2,7 @@
 
 cd /lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/reproduce_benchmarks/kang
 
-model_scripts="train_dis2p.py biolord_train.py scDisInFact_train.py"
+model_scripts="train_celldisect.py biolord_train.py scDisInFact_train.py"
 split_key=("split_CD14 Mono" "split_CD4 T" "split_T" "split_CD8 T" "split_B" "split_DC" "split_CD16 Mono" "split_NK")
 
 i=0

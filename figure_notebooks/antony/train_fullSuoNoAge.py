@@ -10,7 +10,7 @@ torch.set_float32_matmul_precision('medium')
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
-from dis2p import dis2pvi_cE as dvi
+from celldisect import CellDISECT
 
 scvi.settings.seed = 42
 print(torch.cuda.is_available())
@@ -84,7 +84,7 @@ model_name = (
     f'n_latent_{arch_dict["n_latent_shared"]}_'
     f'n_layers_{arch_dict["n_layers"]}'
 )
-wandb_logger = WandbLogger(project=f"Antony_Dis2PVI_cE_suoFullNoAge", name=model_name)
+wandb_logger = WandbLogger(project=f"Antony_CellDISECT_suoFullNoAge", name=model_name)
 train_dict['logger'] = wandb_logger
 wandb_logger.experiment.config.update({'train_dict': train_dict, 'arch_dict': arch_dict, 'plan_kwargs': plan_kwargs})
 try: # Clean up the directory if it exists, overwrite the model
@@ -93,13 +93,13 @@ try: # Clean up the directory if it exists, overwrite the model
 except OSError as e:
     print(f"Error deleting directory: {e}") 
 
-dvi.Dis2pVI_cE.setup_anndata(
+CellDISECT.setup_anndata(
     adata,
     layer='counts',
     categorical_covariate_keys=cats,
     continuous_covariate_keys=[]
 )
-model = dvi.Dis2pVI_cE(adata,
+model = CellDISECT(adata,
                        **arch_dict)
 model.train(**train_dict, plan_kwargs=plan_kwargs, )
 model.save(f"{pre_path}/{model_name}", overwrite=True)

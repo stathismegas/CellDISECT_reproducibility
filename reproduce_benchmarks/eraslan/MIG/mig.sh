@@ -2,7 +2,7 @@
 
 cd /lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/reproduce_benchmarks/eraslan/MIG
 
-model_scripts="compute_mig_dis2p.py compute_mig_biolord.py compute_mig_scdisinfact.py"
+model_scripts="compute_mig_celldisect.py compute_mig_biolord.py compute_mig_scdisinfact.py"
 split_key=("split_1" "split_2" "split_4")
 
 i=0
