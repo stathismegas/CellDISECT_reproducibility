@@ -1,5 +1,5 @@
-from dis2p.tuner_base import run_autotune
-from dis2p import dis2pvi_cE as dvi
+from celldisect.tuner_base import run_autotune
+from celldisect import CellDISECT
 
 import scanpy as sc
 from ray import tune
@@ -88,7 +88,7 @@ setup_anndata_kwargs = {
     'categorical_covariate_keys': cats,
     'continuous_covariate_keys': []
 }
-model = dvi.Dis2pVI_cE
+model = CellDISECT
 model.setup_anndata(adata, **setup_anndata_kwargs)
 
 x_loss = [f'x_{i}_validation' for i in range(len(cats)+1)]
@@ -188,7 +188,7 @@ experiment = run_autotune(
     # Change this to your desired resources
     resources={"cpu": 1, "gpu": 0.1, "memory": 64 * 1024 * 1024 * 1024},
     experiment_name="kang_hyperTune",  # Change this to your desired experiment name
-    logging_dir='/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/figure_notebooks/kang/kang_split_CD4_T',  # Change this to your desired path
+    logging_dir='/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/CellDISECT_reproducibility/figure_notebooks/kang/kang_split_CD4_T',  # Change this to your desired path
     adata_path=DATA_PATH,
     sub_sample=None,
     setup_anndata_kwargs=setup_anndata_kwargs,
