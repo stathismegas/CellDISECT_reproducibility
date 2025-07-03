@@ -2,7 +2,7 @@ from re import split
 import scanpy as sc
 import pandas as pd
 import numpy as np
-from dis2p import dis2pvi_cE as dvi
+from celldisect import CellDISECT
 import biolord
 import gc
 import torch
@@ -54,15 +54,15 @@ n_samples_from_source_max = 500
 pre_path = '/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/models/'
 
 def load_models(
-    dis2p_model_path: str,
+    celldisect_model_path: str,
     biolord_model_path: str,
 ):
-    model = dvi.Dis2pVI_cE.load(f"{pre_path}/{dis2p_model_path}", adata=adata)
+    model = CellDISECT.load(f"{pre_path}/{celldisect_model_path}", adata=adata)
     biolord_model = biolord.Biolord.load(f"{pre_path}/{biolord_model_path}", adata=adata_biolord)
     
     return model, biolord_model
 
-def dis2p_pred(
+def celldisect_pred(
     model,
     adata,
     cell_type_to_check,
@@ -120,13 +120,13 @@ def biolord_pred(
 split_name = 'split_4'
 gc.collect()
 
-dis2p_model_path = (
-    f'dis2p_cE_{split_name}/'
+celldisect_model_path = (
+    f'celldisect_{split_name}/'
     f'pretrainAE_10_maxEpochs_100_split_{split_name}_reconW_20_cfWeight_1.5_beta_0.003_clf_0.8_adv_0.015_advp_5_n_cf_1_lr_0.01_wd_0.0005_new_cf_True_dropout_0.2_n_hidden_128_n_latent_32_n_layers_2'
 )
 biolord_model_path = f'biolord/eraslan_biolord_earlierStop_basicSettings_nb_{split_name}/'
 
-model, biolord_model = load_models(dis2p_model_path, biolord_model_path)
+model, biolord_model = load_models(celldisect_model_path, biolord_model_path)
 
 cell_type_to_check = ['Immune (DC/macrophage)', 'Immune (alveolar macrophage)']
 cov_names = ['tissue']
@@ -141,8 +141,8 @@ adata_ = adata[(adata.obs['sex'] == 'male') &
                (adata.obs['Broad cell type'].isin(cell_type_to_check))].copy()
 
 print(f"Predicting for {split_name}")
-print("Getting predictions for Dis2P...")
-x_ctrl, x_true, x_pred = dis2p_pred(
+print("Getting predictions for CellDISECT...")
+x_ctrl, x_true, x_pred = celldisect_pred(
     model,
     adata_,
     cell_type_to_check,
@@ -211,11 +211,11 @@ for n_top_deg in [20, None]:
     r2_var_biolord_deg = pearsonr(x_true_deg.var(0), x_biolord_deg.var(0))
     
     r2_results[str(n_top_deg)] = {}
-    r2_results[str(n_top_deg)]['Dis2P'] = r2_mean_deg[0]
+    r2_results[str(n_top_deg)]['CellDISECT'] = r2_mean_deg[0]
     r2_results[str(n_top_deg)]['Biolord'] = r2_mean_biolord_deg[0]
     r2_results[str(n_top_deg)]['Control'] = r2_mean_base_deg[0]
 
-    r2_results[str(n_top_deg)]['Dis2P_var'] = r2_var_deg[0]
+    r2_results[str(n_top_deg)]['CellDISECT_var'] = r2_var_deg[0]
     r2_results[str(n_top_deg)]['Biolord_var'] = r2_var_biolord_deg[0]
     r2_results[str(n_top_deg)]['Control_var'] = r2_var_base_deg[0]
     
@@ -243,10 +243,10 @@ for n_top_deg in [20, None]:
     r2_var_biolord_deg = pearsonr(x_true_deg.var(0) - x_ctrl_deg.var(0), x_biolord_deg.var(0) - x_ctrl_deg.var(0))
     
     r2_results_subtract[str(n_top_deg)] = {}
-    r2_results_subtract[str(n_top_deg)]['Dis2P'] = r2_mean_deg[0]
+    r2_results_subtract[str(n_top_deg)]['CellDISECT'] = r2_mean_deg[0]
     r2_results_subtract[str(n_top_deg)]['Biolord'] = r2_mean_biolord_deg[0]
 
-    r2_results_subtract[str(n_top_deg)]['Dis2P_var'] = r2_var_deg[0]
+    r2_results_subtract[str(n_top_deg)]['CellDISECT_var'] = r2_var_deg[0]
     r2_results_subtract[str(n_top_deg)]['Biolord_var'] = r2_var_biolord_deg[0]
     
 r2_results_subtract = pd.DataFrame.from_dict(r2_results_subtract).T

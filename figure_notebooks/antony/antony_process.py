@@ -17,7 +17,7 @@ torch.set_float32_matmul_precision('medium')
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
-import dis2p.dis2pvi_cE as dvi
+from celldisect import CellDISECT
 
 import rapids_singlecell as rsc
 import cupy as cp
@@ -80,20 +80,20 @@ pre_path = f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/models/{module_
 print(f"Loading the model...")
 model_name = model_names[name]
 # load model
-model = dvi.Dis2pVI_cE.load(f"{pre_path}/{model_name}", adata=adata)
+model = CellDISECT.load(f"{pre_path}/{model_name}", adata=adata)
 
 print(f"Getting the latent 0...")
 # Z_0
-adata.obsm[f'dis2p_cE_Z_0'] = model.get_latent_representation(nullify_cat_covs_indices=[s for s in range(len(cats))], nullify_shared=False)
+adata.obsm[f'celldisect_Z_0'] = model.get_latent_representation(nullify_cat_covs_indices=[s for s in range(len(cats))], nullify_shared=False)
 
 for i in range(len(cats)):
     print(f"Getting the latent {i+1} / {len(cats)}...")
     null_idx = [s for s in range(len(cats)) if s != i]
     label = cats[i]
     # Z_i
-    adata.obsm[f'dis2p_cE_Z_{label}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
+    adata.obsm[f'celldisect_Z_{label}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
     # Z_{-i}
-    adata.obsm[f'dis2p_cE_Z_not_{label}'] = model.get_latent_representation(nullify_cat_covs_indices=[i], nullify_shared=False)
+    adata.obsm[f'celldisect_Z_not_{label}'] = model.get_latent_representation(nullify_cat_covs_indices=[i], nullify_shared=False)
 
 cats_to_visualise_in_latent = ['organ','bin_age']
 
@@ -105,11 +105,11 @@ null_idx = [x for x in range(len(cats)) if x not in indexes]
 
 print(f"Getting the latents for {cats_to_visualise_in_latent}...")
 # Z_i - latent space that retains information only about cats_to_visualise_in_latent or unsupervised covariates (ie due to Z_shared a.k.a Z_0)
-adata.obsm[f'dis2p_cE_Z_{"_".join(cats_to_visualise_in_latent)}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
+adata.obsm[f'celldisect_Z_{"_".join(cats_to_visualise_in_latent)}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
 
 print(f"Getting the latents for everything but {cats_to_visualise_in_latent}...")
 # Z_{-i} - latent space that retains information about everything but cats_to_visualise_in_latent
-adata.obsm[f'dis2p_cE_Z_not_{"_".join(cats_to_visualise_in_latent)}'] = model.get_latent_representation(nullify_cat_covs_indices=indexes, nullify_shared=True)
+adata.obsm[f'celldisect_Z_not_{"_".join(cats_to_visualise_in_latent)}'] = model.get_latent_representation(nullify_cat_covs_indices=indexes, nullify_shared=True)
 
 print("Saving the results part 1...")
 adata.write(output_folder + f'/adata_bin_age_with_latents_{name}.h5ad')
@@ -137,9 +137,9 @@ latents_to_plot = ['all'] + cats
 counter = 0
 for i in range(len(cats) + 1):
     if counter == 0:
-        latent_name = f'dis2p_cE_Z_0'
+        latent_name = f'celldisect_Z_0'
     else:
-        latent_name = f'dis2p_cE_Z_{cats[i-1]}'
+        latent_name = f'celldisect_Z_{cats[i-1]}'
 
     print(f"Calculating Neighbors, UMAP for {latent_name}...")
     latent = ad.AnnData(X=adata.obsm[f"{latent_name}"], obs=adata.obs)
@@ -156,7 +156,7 @@ for i in range(len(cats) + 1):
     counter +=1
 
 i = 'organ_bin_age'
-latent_name = f'dis2p_cE_Z_{i}'
+latent_name = f'celldisect_Z_{i}'
 print(f"Calculating Neighbors, UMAP for {latent_name}...")
 latent = ad.AnnData(X=adata.obsm[f"{latent_name}"], obs=adata.obs)
 rsc.get.anndata_to_GPU(latent)

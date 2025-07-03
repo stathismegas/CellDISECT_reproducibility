@@ -10,7 +10,7 @@ torch.set_float32_matmul_precision('medium')
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
-from dis2p import dis2pvi_cE as dvi
+from celldisect import CellDISECT
 
 scvi.settings.seed = 42
 print(torch.cuda.is_available())
@@ -71,7 +71,7 @@ if not os.path.exists(pre_path):
 
 # specify a name for your model
 model_name =  f'maxEpoch_{train_dict["max_epochs"]}_reconW_{train_dict["recon_weight"]}_cfWeight_{train_dict["cf_weight"]}_beta_{train_dict["beta"]}_clf_{train_dict["clf_weight"]}_adv_{train_dict["adv_clf_weight"]}_advp_{train_dict["adv_period"]}_n_cf_{train_dict["n_cf"]}_lr_{plan_kwargs["lr"]}_wd_{plan_kwargs["weight_decay"]}_new_cf_{plan_kwargs["new_cf_method"]}_dropout_{arch_dict["dropout_rate"]}_n_hidden_{arch_dict["n_hidden"]}_n_latent_{arch_dict["n_latent_shared"]}_n_layers_{arch_dict["n_layers"]}'
-wandb_logger = WandbLogger(project=f"Antony_Dis2PVI_cE", name=model_name)
+wandb_logger = WandbLogger(project=f"Antony_CellDISECT", name=model_name)
 train_dict['logger'] = wandb_logger
 wandb_logger.experiment.config.update({'train_dict': train_dict, 'arch_dict': arch_dict, 'plan_kwargs': plan_kwargs})
 try: # Clean up the directory if it exists, overwrite the model
@@ -80,13 +80,13 @@ try: # Clean up the directory if it exists, overwrite the model
 except OSError as e:
     print(f"Error deleting directory: {e}") 
 
-dvi.Dis2pVI_cE.setup_anndata(
+CellDISECT.setup_anndata(
     adata,
     layer='counts',
     categorical_covariate_keys=cats,
     continuous_covariate_keys=[]
 )
-model = dvi.Dis2pVI_cE(adata,
+model = CellDISECT(adata,
                        **arch_dict)
 model.train(**train_dict, plan_kwargs=plan_kwargs, )
 model.save(f"{pre_path}/{model_name}", overwrite=True)

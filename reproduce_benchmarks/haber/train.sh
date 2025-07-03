@@ -2,7 +2,7 @@
 
 cd /lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_reproducibility/reproduce_benchmarks/haber
 
-model_scripts="train_dis2p.py biolord_train.py scDisInFact_train.py"
+model_scripts="train_celldisect.py biolord_train.py scDisInFact_train.py"
 
 split_key=(
 "split_allOut_Enterocyte.Progenitor_salmonella"

@@ -9,7 +9,7 @@ import warnings
 warnings.simplefilter("ignore", UserWarning)
 import gc
 
-from dis2p import dis2pvi_cE as dvi
+from celldisect import celldisectvi_cE as dvi
 import biolord
 from scDisInFact import scdisinfact, create_scdisinfact_dataset
 
@@ -79,11 +79,11 @@ REGISTRY_KEYS = _REGISTRY_KEYS_NT()
 pre_path = '/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/models/'
 
 def load_models(
-    dis2p_model_path: str,
+    celldisect_model_path: str,
     biolord_model_path: str,
     scdisinfact_model_path: str,
 ):
-    model = dvi.Dis2pVI_cE.load(f"{pre_path}/{dis2p_model_path}", adata=adata)
+    model = dvi.CellDISECTVI_cE.load(f"{pre_path}/{celldisect_model_path}", adata=adata)
     biolord_model = biolord.Biolord.load(f"{pre_path}/{biolord_model_path}", adata=adata_biolord)
     
     scdisinfact_model = scdisinfact(data_dict = data_dict, Ks = Ks, batch_size = batch_size, interval = interval, lr = lr, 
@@ -101,25 +101,25 @@ for key in adata.obs.keys():
 for cell_type_to_check in ood_cts:
     gc.collect()
 
-    dis2p_model_path = (
-        f'kang_dis2p_cE_split_{cell_type_to_check}/'
+    celldisect_model_path = (
+        f'kang_celldisect_cE_split_{cell_type_to_check}/'
         f'pretrainAE_0_maxEpochs_1000_split_split_{cell_type_to_check}_reconW_20_cfWeight_0.8_beta_0.003_clf_0.05_adv_0.014_advp_5_n_cf_1_lr_0.003_wd_5e-05_new_cf_True_dropout_0.1_n_hidden_128_n_latent_32_n_layers_2'
     )
     biolord_model_path = f'biolord/kang_biolord_earlierStop_basicSettings_nb_split_{cell_type_to_check}/'
     scdisinfact_model_path = f'scDisInfact/kang_scdisinfact_40_10_split_{cell_type_to_check}.pth'
     
-    model, biolord_model, scdisinfact_model = load_models(dis2p_model_path, biolord_model_path, scdisinfact_model_path)
+    model, biolord_model, scdisinfact_model = load_models(celldisect_model_path, biolord_model_path, scdisinfact_model_path)
     
 
     # Z_0
-    adata.obsm[f'dis2p_cE_Z_0'] = model.get_latent_representation(nullify_cat_covs_indices=[s for s in range(len(cats))], nullify_shared=False)
+    adata.obsm[f'celldisect_Z_0'] = model.get_latent_representation(nullify_cat_covs_indices=[s for s in range(len(cats))], nullify_shared=False)
 
     for i in range(len(cats)):
         null_idx = [s for s in range(len(cats)) if s != i]
         # Z_i
-        adata.obsm[f'dis2p_cE_Z_{i+1}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
+        adata.obsm[f'celldisect_Z_{i+1}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
         # Z_{-i}
-        adata.obsm[f'dis2p_cE_Z_not_{i+1}'] = model.get_latent_representation(nullify_cat_covs_indices=[i], nullify_shared=False)
+        adata.obsm[f'celldisect_Z_not_{i+1}'] = model.get_latent_representation(nullify_cat_covs_indices=[i], nullify_shared=False)
         
     for i, cat in enumerate(cats):
         nullify = [c for c in cats if c != cat]
@@ -179,7 +179,7 @@ for cell_type_to_check in ood_cts:
         print(f"Label: {label_key}")
         bms[label_key] = {}
         label_ind = cats.index(label_key) + 1
-        embedding_obsm_keys = [f'dis2p_cE_Z_{label_ind}', 
+        embedding_obsm_keys = [f'celldisect_Z_{label_ind}', 
                             f'Biolord_Z_{label_ind}',
                             f'scDisInfact_Z_{label_ind}',]
         for batch_key in cats:

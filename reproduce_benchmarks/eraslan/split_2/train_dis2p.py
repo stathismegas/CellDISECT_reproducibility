@@ -12,7 +12,7 @@ except ValueError: # already removed
 __package__ = '.'.join(parent.parts[len(top.parts):])
 importlib.import_module(__package__)
 
-from ...parameters.dis2p_params import train_dict, arch_dict, plan_kwargs
+from ...parameters.celldisect_params import train_dict, arch_dict, plan_kwargs
 
 import os
 import shutil
@@ -26,7 +26,7 @@ torch.set_float32_matmul_precision('medium')
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
-from dis2p import dis2pvi_cE as dvi
+from celldisect import CellDISECT
 
 scvi.settings.seed = 42
 
@@ -36,7 +36,7 @@ adata = adata[adata.X.sum(1) != 0].copy()
 cats = ['tissue', 'Sample ID', 'sex', 'Age_bin', 'CoarseCellType']
 split_key = 'split_2'
 
-module_name = f'dis2p_cE_{split_key}'
+module_name = f'celldisect_{split_key}'
 pre_path = f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/models/{module_name}'
 if not os.path.exists(pre_path):
     os.makedirs(pre_path)
@@ -61,7 +61,7 @@ model_name = (
     f'n_layers_{arch_dict["n_layers"]}'
 )
 
-wandb_logger = WandbLogger(project=f"Dis2PVI_cE_{split_key}", name=model_name)
+wandb_logger = WandbLogger(project=f"CellDISECT_{split_key}", name=model_name)
 train_dict['logger'] = wandb_logger
 wandb_logger.experiment.config.update({'train_dict': train_dict, 'arch_dict': arch_dict, 'plan_kwargs': plan_kwargs})
 try: # Clean up the directory if it exists, overwrite the model
@@ -70,13 +70,13 @@ try: # Clean up the directory if it exists, overwrite the model
 except OSError as e:
     print(f"Error deleting directory: {e}") 
 
-dvi.Dis2pVI_cE.setup_anndata(
+CellDISECT.setup_anndata(
     adata,
     layer='counts',
     categorical_covariate_keys=cats,
     continuous_covariate_keys=[]
 )
-model = dvi.Dis2pVI_cE(adata,
+model = CellDISECT(adata,
                        split_key=split_key,
                        train_split=['train'],
                        valid_split=['val'],

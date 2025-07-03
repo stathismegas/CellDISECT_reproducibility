@@ -17,7 +17,7 @@ torch.set_float32_matmul_precision('medium')
 import warnings
 warnings.simplefilter("ignore", UserWarning)
 
-from dis2p import dis2pvi_cE as dvi
+from celldisect import CellDISECT
 
 scvi.settings.seed = 42
 print(torch.cuda.is_available())
@@ -91,7 +91,7 @@ model_name = (
     f'n_latent_{arch_dict["n_latent_shared"]}_'
     f'n_layers_{arch_dict["n_layers"]}'
 )
-wandb_logger = WandbLogger(project=f"Antony_Dis2PVI_cE_suo5", name=model_name)
+wandb_logger = WandbLogger(project=f"Antony_CellDISECT_suo5", name=model_name)
 train_dict['logger'] = wandb_logger
 wandb_logger.experiment.config.update({'train_dict': train_dict, 'arch_dict': arch_dict, 'plan_kwargs': plan_kwargs})
 try: # Clean up the directory if it exists, overwrite the model
@@ -100,13 +100,13 @@ try: # Clean up the directory if it exists, overwrite the model
 except OSError as e:
     print(f"Error deleting directory: {e}") 
 
-dvi.Dis2pVI_cE.setup_anndata(
+CellDISECT.setup_anndata(
     adata,
     layer='counts',
     categorical_covariate_keys=cats,
     continuous_covariate_keys=[]
 )
-model = dvi.Dis2pVI_cE(adata,
+model = CellDISECT(adata,
                        **arch_dict)
 model.train(**train_dict, plan_kwargs=plan_kwargs, )
 model.save(f"{pre_path}/{model_name}", overwrite=True)
@@ -116,23 +116,23 @@ del model
 import gc
 gc.collect()
 
-model = dvi.Dis2pVI_cE.load(f"{pre_path}/{model_name}", adata=adata)
+model = CellDISECT.load(f"{pre_path}/{model_name}", adata=adata)
 
 # Z_0
-adata.obsm[f'dis2p_cE_Z_0'] = model.get_latent_representation(nullify_cat_covs_indices=[s for s in range(len(cats))], nullify_shared=False)
+adata.obsm[f'celldisect_Z_0'] = model.get_latent_representation(nullify_cat_covs_indices=[s for s in range(len(cats))], nullify_shared=False)
 
 for i in range(len(cats)):
     null_idx = [s for s in range(len(cats)) if s != i]
     # Z_i
-    adata.obsm[f'dis2p_cE_Z_{cats[i]}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
+    adata.obsm[f'celldisect_Z_{cats[i]}'] = model.get_latent_representation(nullify_cat_covs_indices=null_idx, nullify_shared=True)
     # Z_{-i}
-    # adata.obsm[f'dis2p_cE_Z_not_{i+1}'] = model.get_latent_representation(nullify_cat_covs_indices=[i], nullify_shared=False)
+    # adata.obsm[f'celldisect_Z_not_{i+1}'] = model.get_latent_representation(nullify_cat_covs_indices=[i], nullify_shared=False)
 
 for i in range(len(cats) + 1):  # loop over all Z_i
     if i == 0:
-        latent_name = f'dis2p_cE_Z_{i}'
+        latent_name = f'celldisect_Z_{i}'
     else:
-        latent_name = f'dis2p_cE_Z_{cats[i-1]}'
+        latent_name = f'celldisect_Z_{cats[i-1]}'
 
     latent = ad.AnnData(X=adata.obsm[f"{latent_name}"], obs=adata.obs)
     sc.pp.neighbors(adata=latent, use_rep='X')
@@ -151,9 +151,9 @@ pdf = PdfPages(f'/lustre/scratch126/cellgen/team205/aa34/Arian/Dis2P/dis2p_repro
 sc.set_figure_params(dpi=50)
 for i in range(len(cats) + 1):  # loop over all Z_i
     if i == 0:
-        latent_name = f'dis2p_cE_Z_{i}'
+        latent_name = f'celldisect_Z_{i}'
     else:
-        latent_name = f'dis2p_cE_Z_{cats[i-1]}'
+        latent_name = f'celldisect_Z_{cats[i-1]}'
 
     fig = sc.pl.embedding(
         adata,
